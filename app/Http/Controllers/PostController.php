@@ -3,16 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Support\Facades\Gate;
+use App\Policies\PostPolicy;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
-        //
+        return Inertia::render('Posts/Index', [
+            'posts' => Post::with('user:id,name')->latest()->get(), 
+        ]);
     }
 
     /**
@@ -28,7 +35,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'message' => 'required|string'
+        ]);
+
+        $request->user()->post()->create($validated);
+
+        return redirect(route('post.index'));
     }
 
     /**
@@ -50,16 +63,31 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, Post $post): RedirectResponse
     {
-        //
+        // if (! Gate::allows('updatePost', $post)) {
+        //     abort(403);
+        // };
+        // Gate::authorize('update', $post);
+
+        $validated = $request->validate([
+            'message' => 'required|string',
+        ]);
+
+        $post->update($validated);
+
+        return redirect(route('post.index'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post): RedirectResponse
     {
-        //
+        Gate::authorize('updatePost', $post );
+
+        $post->delete();
+
+        return redirect(route('post.index'));
     }
 }
