@@ -18,11 +18,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Post Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::get('/posts', [PostController::class, 'index'])->name('post.index');
-    Route::post('/post', [PostController::class, 'store'])->name('post.store');
-    Route::put('/post', [PostController::class, 'update'])->name('post.update');
-});
+    Route::post('/post', [PostController::class, 'store'])->middleware(['auth', 'verified'])->name('post.store');
+    Route::put('/post/{post}', [PostController::class, 'update'])->middleware(['auth', 'verified'])->name('post.update');
+    Route::delete('/post/{post}', [PostController::class, 'destroy'])->middleware(['auth', 'verified'])->name('post.delete');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

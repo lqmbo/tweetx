@@ -47,9 +47,9 @@ const editing = ref(false);
                             @click="editing = true">
                             edit
                         </button>
-                        <!-- <DropdownLink :href="route('post.destroy', post.id)" method="delete" as="button">
+                        <DropdownLink :href="route('post.delete', post.id)" method="delete" as="button">
                             delete
-                        </DropdownLink> -->
+                        </DropdownLink>
                     </template>
                 </Dropdown>
 

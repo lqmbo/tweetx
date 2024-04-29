@@ -65,10 +65,7 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post): RedirectResponse
     {
-        // if (! Gate::allows('updatePost', $post)) {
-        //     abort(403);
-        // };
-        // Gate::authorize('update', $post);
+        Gate::authorize('updatePost', $post);
 
         $validated = $request->validate([
             'message' => 'required|string',
@@ -84,7 +81,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post): RedirectResponse
     {
-        Gate::authorize('updatePost', $post );
+        Gate::authorize('updatePost', $post);
+        
 
         $post->delete();
 
