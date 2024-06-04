@@ -1,8 +1,12 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\ContactForm;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+// use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 
@@ -12,6 +16,35 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
+
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
+Route::post('/contact', function (Request $request, ContactForm $contactForm) {
+
+    // Gate::authorize('contact.form', $contactForm);
+
+    $contactDetails = $request->validate([
+        'name' => 'required',
+        'surname' => 'required',
+        'email' => 'required',
+        'number' => 'required',
+        'message' => 'required',
+    ]);
+    
+    $request->user()->contactForm()->create($contactDetails);
+
+    return redirect(route('contact'));
+})->middleware(('auth'))->name('contactForm.store');
+
+Route::get('/nothing', function () {
+    return Inertia::render('Nothing');
+})->name('nothing');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
